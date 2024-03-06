@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.learn.learn13.mapper.UserMapper">
+
+    <!-- 회원 목록 조회 -->
+    <select id="findAllUsers" resultType="com.learn.learn13.model.User">
+        SELECT
+            u.user_id
+             , u.user_name
+             , u.email
+             , u.tel
+             , u.birth
+             , u.gender
+             , u.country
+             , u.agree_terms
+        FROM user u
+    </select>
+
+    <!-- 회원 조회 -->
+    <resultMap id="UserMap" type="com.learn.learn13.model.User">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="email" column="email"/>
+        <result property="tel" column="tel"/>
+        <result property="birth" column="birth"/>
+        <result property="gender" column="gender"/>
+        <result property="country" column="country"/>
+        <result property="agreeTerms" column="agree_terms"/>
+        <collection property="userInterest" ofType="String" javaType="ArrayList">
+            <id column="interest" />
+        </collection>
+    </resultMap>
+    <select id="findUserById" parameterType="String" resultMap="UserMap">
+        SELECT
+            u.user_id
+             , u.user_name
+             , u.email
+             , u.tel
+             , u.birth
+             , u.gender
+             , u.country
+             , u.agree_terms
+             , ui.interest
+        FROM user u
+        LEFT JOIN user_interest ui ON u.user_id = ui.user_id
+        WHERE u.user_id = #{userId}
+    </select>
+
+    <insert id="insertUser" parameterType="com.learn.learn13.model.User">
+        INSERT INTO user (
+                           user_id
+                         , user_name
+                         , password
+                         , email
+                         , tel
+                         , birth
+                         , gender
+                         , country
+                         , agree_terms
+        )  VALUES (
+                    #{userId}
+                  , #{userName}
+                  , #{password}
+                  , #{email}
+                  , #{tel}
+                  , #{birth}
+                  , #{gender}
+                  , #{country}
+                  , #{agreeTerms}
+                  )
+    </insert>
+
+    <insert id="insertUserInterest" parameterType="Map">
+        INSERT INTO user_interest (
+                                    user_id
+                                  , interest
+        )  VALUES (
+                    #{userId}
+                  , #{interest}
+                  )
+    </insert>
+
+    <update id="updateUser" parameterType="com.learn.learn13.model.User">
+        UPDATE user
+        SET user_name = #{userName}
+          , email = #{email}
+          , tel = #{tel}
+          , birth = #{birth}
+          , gender = #{gender}
+          , country = #{country}
+          , agree_terms = #{agreeTerms}
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteUser" parameterType="com.learn.learn13.model.User">
+        DELETE FROM user
+        WHERE user_id = #{userId}
+    </delete>
+
+    <delete id="deleteUserInterest" parameterType="com.learn.learn13.model.User">
+        DELETE FROM user_interest
+        WHERE user_id = #{userId}
+    </delete>
+</mapper>
